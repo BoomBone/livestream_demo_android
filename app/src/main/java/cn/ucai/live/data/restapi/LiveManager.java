@@ -2,6 +2,8 @@ package cn.ucai.live.data.restapi;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+
+import cn.ucai.live.I;
 import cn.ucai.live.LiveApplication;
 import cn.ucai.live.data.model.LiveRoom;
 import cn.ucai.live.data.restapi.model.LiveStatusModule;
@@ -23,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by wei on 2017/2/14.
@@ -31,6 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LiveManager {
     private String appkey;
     private ApiService apiService;
+    private LiveService liveService;
 
     private static LiveManager instance;
 
@@ -58,7 +62,12 @@ public class LiveManager {
                 .build();
 
         apiService = retrofit.create(ApiService.class);
-
+        Retrofit retrofit2 = new Retrofit.Builder()
+                .baseUrl(I.SERVER_ROOT)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .client(httpClient)
+                .build();
+        liveService = retrofit.create(LiveService.class);
     }
 
 
