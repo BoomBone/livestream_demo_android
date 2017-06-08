@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import cn.ucai.live.LiveHelper;
 import cn.ucai.live.R;
 import cn.ucai.live.utils.L;
 import cn.ucai.live.utils.MD5;
@@ -48,6 +49,11 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        String username = LiveHelper.getInstance().getCurrentUsernName();
+        if(username!=null){
+            mEmailView.setText(username);
+            mEmailView.selectAll();
+        }
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
