@@ -1,9 +1,14 @@
 package cn.ucai.live.data.restapi;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.POST;
-import retrofit2.http.Query;
+        import cn.ucai.live.I;
+        import okhttp3.MultipartBody;
+        import okhttp3.RequestBody;
+        import retrofit2.Call;
+        import retrofit2.http.GET;
+        import retrofit2.http.Multipart;
+        import retrofit2.http.POST;
+        import retrofit2.http.Part;
+        import retrofit2.http.Query;
 
 /**
  * Created by Administrator on 2017/6/7.
@@ -74,8 +79,10 @@ public interface LiveService {
 
     //上传直播室头像图片
     //http://101.251.196.90:8080/SuperWeChatServerV2.0/live/uploadChatRoomAvatar?chatRoomId=23
+    @Multipart
     @POST("live/uploadChatRoomAvatar")
-    Call<String> uploadChatRoomAvatar(@Query("chatRoomId") String chatRoomId);
+    Call<String> uploadChatRoomAvatar(@Query("chatRoomId") String chatRoomId,
+                                      @Part MultipartBody.Part file);
 
     //查询全部直播室
     //http://101.251.196.90:8080/SuperWeChatServerV2.0/live/getAllChatRoom
@@ -100,5 +107,24 @@ public interface LiveService {
                                       @Query("chatRoomId") String chatRoomId,
                                       @Query("username") String username);
 
+    //注册
+    //http://101.251.196.90:8080/SuperWeChatServerV2.0/
+    // register?m_user_name=1&m_user_nick=1&m_user_password=1
+    @Multipart
+    @POST("register")
+    Call<String> register(@Query(I.User.USER_NAME) String username,
+                          @Query(I.User.NICK) String usernick,
+                          @Query(I.User.PASSWORD) String password,
+                          @Part MultipartBody.Part file);
 
+
+    //取消注册
+    //http://101.251.196.90:8080/SuperWeChatServerV2.0/unregister?m_user_name=1
+    @GET("unregister")
+    Call<String> unregister(@Query("m_user_name") String username);
+
+    //根据用户名查找用户信息
+    //http://101.251.196.90:8080/SuperWeChatServerV2.0/findUserByUserName?m_user_name=1
+    @GET("findUserByUserName")
+    Call<String> findUserByUserName(@Query("m_user_name") String username);
 }
