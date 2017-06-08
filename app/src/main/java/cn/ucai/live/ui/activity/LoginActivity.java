@@ -49,11 +49,7 @@ public class LoginActivity extends BaseActivity {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        String username = LiveHelper.getInstance().getCurrentUsernName();
-        if(username!=null){
-            mEmailView.setText(username);
-            mEmailView.selectAll();
-        }
+
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -85,10 +81,17 @@ public class LoginActivity extends BaseActivity {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
             }
         });
-
-
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String username = LiveHelper.getInstance().getCurrentUsernName();
+        if(username!=null){
+            mEmailView.setText(username);
+            mEmailView.selectAll();
+        }
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -101,7 +104,7 @@ public class LoginActivity extends BaseActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        Editable email = mEmailView.getText();
+        final Editable email = mEmailView.getText();
         Editable password = mPasswordView.getText();
 
         boolean cancel = false;
@@ -133,7 +136,8 @@ public class LoginActivity extends BaseActivity {
             EMClient.getInstance().login(email.toString(), MD5.getMessageDigest(password.toString()), new EMCallBack() {
                 @Override
                 public void onSuccess() {
-                    L.e(TAG,"EMClient.getInstance().getCurrentUser()="+EMClient.getInstance().getCurrentUser());
+                    LiveHelper.getInstance().syncUserInfo(email.toString());
+                    L.e(TAG, "EMClient.getInstance().getCurrentUser()=" + EMClient.getInstance().getCurrentUser());
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
                 }
