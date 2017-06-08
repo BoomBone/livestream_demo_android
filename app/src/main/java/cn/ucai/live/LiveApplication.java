@@ -40,24 +40,7 @@ public class LiveApplication extends Application{
     //options.setIMServer("103.241.230.122");
     //options.setImPort(31097);
 
-    EaseUI.getInstance().init(this, null);
-    EMClient.getInstance().setDebugMode(true);
-
-    EMClient.getInstance().addConnectionListener(new EMConnectionListener() {
-      @Override public void onConnected() {
-
-      }
-
-      @Override public void onDisconnected(int errorCode) {
-        if(errorCode == EMError.USER_LOGIN_ANOTHER_DEVICE)
-        {
-          Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-          intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-          intent.putExtra("conflict", true);
-          startActivity(intent);
-        }
-      }
-    });
+    LiveHelper.getInstance().init(getApplicationContext());
   }
 
 }
