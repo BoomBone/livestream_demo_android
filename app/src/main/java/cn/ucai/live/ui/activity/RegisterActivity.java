@@ -43,6 +43,7 @@ import cn.ucai.live.utils.CommonUtils;
 import cn.ucai.live.utils.L;
 import cn.ucai.live.utils.MD5;
 import cn.ucai.live.utils.ResultUtils;
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -69,7 +70,7 @@ public class RegisterActivity extends BaseActivity {
     @BindView(R.id.nick)
     EditText mNick;
     @BindView(R.id.iv_avatar)
-    ImageView mAvatar;
+    CircleImageView mAvatar;
     @BindView(R.id.confirm_password)
     EditText confirmPwdEditText;
 
