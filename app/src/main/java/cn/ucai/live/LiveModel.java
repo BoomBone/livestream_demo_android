@@ -14,14 +14,14 @@ public class LiveModel {
      * set current username
      * @param username
      */
-    public static void setCurrentUserName(String username){
+    public  void setCurrentUserName(String username){
         EasePreferenceManager.getInstance().setCurrentUserName(username);
     }
 
     /**
      * get current user's id
      */
-    public static String getCurrentUsernName(){
+    public  String getCurrentUsernName(){
         return EasePreferenceManager.getInstance().getCurrentUsername();
     }
 }

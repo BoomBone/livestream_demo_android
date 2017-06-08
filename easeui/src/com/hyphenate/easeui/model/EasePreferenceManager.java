@@ -28,7 +28,7 @@ public class EasePreferenceManager {
         editor = mSharedPreferences.edit();
         /*==============================================================================*/
         mUserSharedPreferences= EaseUI.getInstance().getContext().getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE);
-        userEditor = mSharedPreferences.edit();
+        userEditor = mUserSharedPreferences.edit();
     }
     private static EasePreferenceManager instance;
     
