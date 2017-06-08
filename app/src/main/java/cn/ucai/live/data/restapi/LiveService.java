@@ -1,14 +1,14 @@
 package cn.ucai.live.data.restapi;
 
-        import cn.ucai.live.I;
-        import okhttp3.MultipartBody;
-        import okhttp3.RequestBody;
-        import retrofit2.Call;
-        import retrofit2.http.GET;
-        import retrofit2.http.Multipart;
-        import retrofit2.http.POST;
-        import retrofit2.http.Part;
-        import retrofit2.http.Query;
+import cn.ucai.live.I;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 /**
  * Created by Administrator on 2017/6/7.
@@ -116,6 +116,12 @@ public interface LiveService {
                           @Query(I.User.NICK) String usernick,
                           @Query(I.User.PASSWORD) String password,
                           @Part MultipartBody.Part file);
+
+
+    @POST("register")
+    Call<String> register2(@Query(I.User.USER_NAME) String username,
+                           @Query(I.User.NICK) String usernick,
+                           @Query(I.User.PASSWORD) String password);
 
 
     //取消注册

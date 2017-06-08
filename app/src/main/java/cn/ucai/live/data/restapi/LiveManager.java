@@ -109,6 +109,7 @@ public class LiveManager {
         Result<User> result = handleResponseCallToResult(call, User.class);
         return  result.getRetData();
     }
+    /*--------------------------------------------有头像注册------------------------------------------------------*/
     public boolean appRegister(String username, String nickname, String password, File file) throws LiveException {
         // 创建 RequestBody，用于封装构建RequestBody
         RequestBody requestFile = RequestBody.create(MediaType.parse("application/form-data"), file);
@@ -118,6 +119,13 @@ public class LiveManager {
         Call<String> call = liveService.register(username, nickname, password, body);
         Result<User> result = handleResponseCallToResult(call, User.class);
         return result.isRetMsg();
+    }
+
+    /*-------------------------------------------无头像注册------------------------------------------------------*/
+    public boolean appRegister2(String username, String nickname, String password) throws LiveException {
+        Call<String> call = liveService.register2(username, nickname, password);
+        Result<User> result = handleResponseCallToResult(call, User.class);
+        return  result.isRetMsg();
     }
 
     public boolean unRegister(String username) throws LiveException {

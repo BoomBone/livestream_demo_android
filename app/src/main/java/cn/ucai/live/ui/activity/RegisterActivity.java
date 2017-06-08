@@ -161,25 +161,25 @@ public class RegisterActivity extends BaseActivity {
             public void run() {
                 try {
                     boolean unRegister = LiveManager.getInstance().unRegister(username);
-                    if(unRegister){
-                        L.e(TAG,"取消注册");
+                    if (unRegister) {
+                        L.e(TAG, "取消注册");
                     }
                 } catch (LiveException e) {
                     e.printStackTrace();
-                    L.e(TAG,"取消注册失败");
+                    L.e(TAG, "取消注册失败");
                 }
             }
         }).start();
     }
 
-    private void userRegister() {
+    private void userRegister2() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                L.e(TAG,"name="+username+",usernick="+usernick+"password="+password);
+                L.e(TAG, "name=" + username + ",usernick=" + usernick + "password=" + password);
                 try {
-                    boolean register = LiveManager.getInstance().appRegister(username, usernick, MD5.getMessageDigest(password), file);
-                    L.e(TAG,"userRegister()"+register);
+                    boolean register = LiveManager.getInstance().appRegister2(username, usernick, MD5.getMessageDigest(password));
+                    L.e(TAG, "userRegister()" + register);
                     if (register) {
                         easeRegister();
                     }
@@ -188,7 +188,36 @@ public class RegisterActivity extends BaseActivity {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            L.e(TAG,"userRegister(),注册失败");
+                            L.e(TAG, "userRegister(),注册失败");
+                            dissmissDialog();
+                            showLongToast("注册失败：" + e.getMessage());
+                        }
+                    });
+                }
+
+            }
+        }).start();
+
+    }
+
+
+    private void userRegister() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                L.e(TAG, "name=" + username + ",usernick=" + usernick + "password=" + password);
+                try {
+                    boolean register = LiveManager.getInstance().appRegister(username, usernick, MD5.getMessageDigest(password), file);
+                    L.e(TAG, "userRegister()" + register);
+                    if (register) {
+                        easeRegister();
+                    }
+                } catch (final LiveException e) {
+                    e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            L.e(TAG, "userRegister(),注册失败");
                             dissmissDialog();
                             showLongToast("注册失败：" + e.getMessage());
                         }
@@ -311,7 +340,12 @@ public class RegisterActivity extends BaseActivity {
     public void onRegisterClicked() {
         initDialog();
         if (checkedInput()) {
-            userRegister();
+            if (file != null) {
+                userRegister();
+            } else {
+                userRegister2();
+            }
+
         } else {
             dissmissDialog();
         }
