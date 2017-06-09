@@ -10,12 +10,14 @@ import java.util.Map;
 
 import cn.ucai.live.LiveApplication;
 import cn.ucai.live.data.model.Gift;
+import cn.ucai.live.utils.L;
 
 /**
  * Created by Administrator on 2017/6/9.
  */
 
 public class LiveDBManager {
+    private static final String TAG = "LiveDBManager";
     static private LiveDBManager dbMgr = new LiveDBManager();
     private LiveDBOpenHelper dbHelper;
 
@@ -33,7 +35,7 @@ public class LiveDBManager {
     /**
      * save contact list
      *
-     * @param contactList
+     * @param list
      */
     synchronized public void saveGiftList(List<Gift> list) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -59,6 +61,7 @@ public class LiveDBManager {
      * @return
      */
     synchronized public Map<Integer, Gift> getGiftList() {
+        L.e(TAG,"getGiftList()");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Map<Integer, Gift> gifts = new Hashtable<Integer, Gift>();
         if (db.isOpen()) {
@@ -74,10 +77,10 @@ public class LiveDBManager {
                 gift.setGurl(giftUrl);
                 gift.setGprice(giftPrice);
                 gifts.put(giftId, gift);
-
             }
             cursor.close();
         }
+        L.e(TAG,"gift="+gifts);
         return gifts;
     }
 }

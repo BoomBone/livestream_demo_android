@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 
 import cn.ucai.live.I;
 import cn.ucai.live.LiveApplication;
+import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.data.model.LiveRoom;
 import cn.ucai.live.data.model.Result;
 import cn.ucai.live.data.restapi.model.LiveStatusModule;
@@ -132,6 +133,12 @@ public class LiveManager {
         Call<String> call = liveService.unregister(username);
         Result<User> result = handleResponseCallToResult(call, User.class);
         return  result.isRetMsg();
+    }
+
+    public List<Gift> loadGiftList() throws LiveException {
+        Call<String> call = liveService.getAllGift();
+        Result<List<Gift>> result = handleResponseCallToResultList(call, Gift.class);
+        return result.getRetData();
     }
 
 

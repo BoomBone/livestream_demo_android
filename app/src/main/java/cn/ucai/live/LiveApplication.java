@@ -2,6 +2,8 @@ package cn.ucai.live;
 
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
+
 import cn.ucai.live.ui.activity.MainActivity;
 import com.hyphenate.EMConnectionListener;
 import com.hyphenate.EMError;
@@ -39,8 +41,7 @@ public class LiveApplication extends Application{
     //options.setRestServer("103.241.230.122:31080");
     //options.setIMServer("103.241.230.122");
     //options.setImPort(31097);
-
-    LiveHelper.getInstance().init(getApplicationContext());
+    LiveHelper.getInstance().init(instance);
   }
 
 }
