@@ -1,0 +1,26 @@
+package cn.ucai.live.data.local;
+
+import java.util.List;
+import java.util.Map;
+
+import cn.ucai.live.data.model.Gift;
+import cn.ucai.live.data.restapi.LiveManager;
+
+/**
+ * Created by Administrator on 2017/6/9.
+ */
+
+public class LiveDao {
+    public static final String GIFT_TABLE_NAME = "live_gift";
+    public static final String GIFT_COLUMN_ID = "gift_id";
+    public static final String GIFT_COLUMN_NAME = "gift_name";
+    public static final String GIFT_COLUMN_URL = "gift_url";
+    public static final String GIFT_COLUMN_PRICE = "gitf_price";
+
+    public void setGiftList(List<Gift> list){
+        LiveDBManager.getInstance().saveGiftList(list);
+    }
+    public Map<Integer, Gift> getGiftList(){
+        return LiveDBManager.getInstance().getGiftList();
+    }
+}
