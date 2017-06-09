@@ -31,6 +31,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
@@ -97,6 +98,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         anchorId = liveRoom.getAnchorId();
         onActivityCreate(savedInstanceState);
         usernameView.setText(anchorId);
+        EaseUserUtils.setAppUserAvatar(LiveBaseActivity.this,anchorId,useravatarView);
         liveIdView.setText(liveId);
         audienceNumView.setText(String.valueOf(liveRoom.getAudienceNum()));
         watchedCount = liveRoom.getAudienceNum();

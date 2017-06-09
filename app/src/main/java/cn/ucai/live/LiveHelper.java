@@ -25,6 +25,8 @@ import cn.ucai.live.data.restapi.LiveManager;
 import cn.ucai.live.ui.activity.MainActivity;
 import cn.ucai.live.utils.L;
 
+import static com.hyphenate.easeui.utils.EaseUserUtils.getUserInfo;
+
 /**
  * Created by Administrator on 2017/6/8.
  */
@@ -38,6 +40,7 @@ public class LiveHelper {
     private Context appContext;
     private User currentAppUser = null;
     private Map<Integer, Gift> giftMap;
+    private EaseUI easeUI;
 
     public LiveHelper() {
     }
@@ -48,11 +51,15 @@ public class LiveHelper {
         }
         return instance;
     }
+
     /*-----------------------应用启动时执行的init方法-----------------------------*/
     public void init(Context context) {
         liveModel = new LiveModel();
         appContext = context;
         EaseUI.getInstance().init(context, null);
+        easeUI = EaseUI.getInstance();
+        setEaseUIProviders();
+
         EMClient.getInstance().setDebugMode(true);
 
         EMClient.getInstance().addConnectionListener(new EMConnectionListener() {
@@ -76,6 +83,30 @@ public class LiveHelper {
         getGiftListFromServer();
     }
 
+    private void setEaseUIProviders() {
+        easeUI.setUserProfileProvider(new EaseUI.EaseUserProfileProvider() {
+            @Override
+            public EaseUser getUser(String username) {
+                return getUserInfo(username);
+            }
+
+            @Override
+            public User getAppUser(String username) {
+                return getAppUserInfo(username);
+            }
+        });
+    }
+    private User getAppUserInfo(String username){
+        User user = null;
+        if(username==EMClient.getInstance().getCurrentUser()){
+            return getCurrentAppUserInfo();
+        }
+        if(user==null){
+            user = new User(username);
+        }
+        return user;
+    }
+
     /**
      * user met some exception: conflict, removed or forbidden
      */
@@ -91,7 +122,7 @@ public class LiveHelper {
 
     /*---------------------------异步加载用户数据-------------------------------------*/
     public void syncUserInfo(final String username) {
-        L.e(TAG,"syncUserInfo");
+        L.e(TAG, "syncUserInfo");
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -111,7 +142,7 @@ public class LiveHelper {
 
     /*--------------创建了一个空User并通过SharePreference给他赋值-----------------*/
     public synchronized User getCurrentAppUserInfo() {
-        L.e(TAG,"getCurrentAppUserInfo()");
+        L.e(TAG, "getCurrentAppUserInfo()");
         if (currentAppUser == null) {
             String username = EMClient.getInstance().getCurrentUser();
             currentAppUser = new User(username);
@@ -121,11 +152,13 @@ public class LiveHelper {
         }
         return currentAppUser;
     }
+
     /*--------------------get set 方法-------------------------------------*/
     private void setCurrentAppUserNick(String nickname) {
         getCurrentAppUserInfo().setMUserNick(nickname);
         EasePreferenceManager.getInstance().setCurrentUserNick(nickname);
     }
+
     private String getCurrentUserNick() {
         return EasePreferenceManager.getInstance().getCurrentUserNick();
     }
@@ -154,7 +187,7 @@ public class LiveHelper {
     }
     /*----------------------当登出后清空内存和SharePreference--------------------*/
 
-    public synchronized void reset(){
+    public synchronized void reset() {
         currentAppUser = null;
         EasePreferenceManager.getInstance().removeCurrentUserInfo();
     }
@@ -163,8 +196,8 @@ public class LiveHelper {
 
     /*---------------------set get礼物列表----------------------------------------*/
     public void setGiftList(Map<Integer, Gift> list) {
-        L.e(TAG,"save data to cache");
-        if(list == null){
+        L.e(TAG, "save data to cache");
+        if (list == null) {
             if (giftMap != null) {
                 giftMap.clear();
             }
@@ -173,48 +206,50 @@ public class LiveHelper {
 
         giftMap = list;
     }
+
     public Map<Integer, Gift> getGiftList() {
-        L.e(TAG,"getGiftList()");
+        L.e(TAG, "getGiftList()");
         if (giftMap == null) {
             giftMap = liveModel.getGiftList();
         }
 
         // return a empty non-null object to avoid app crash
-        if(giftMap == null){
+        if (giftMap == null) {
             return new HashMap<Integer, Gift>();
         }
 
         return giftMap;
     }
+
     /*----------------------从服务器获取礼物列表-----------------------------------------*/
     public void getGiftListFromServer() {
-        L.e(TAG,"getGiftListFromServer()");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    L.e(TAG, "getGiftListFromServer()..." + getGiftList().size());
-                    if(getGiftList().size()==0){
-                        try {
-                            List<Gift> list = LiveManager.getInstance().loadGiftList();
-                            L.e(TAG,"list="+list);
-                            if(list!=null){
-                                Map<Integer, Gift>  map = new HashMap<Integer, Gift>();
-                                for (Gift gift : list) {
-                                    map.put(gift.getId(), gift);
-                                }
-                                //save data to cache
-                                setGiftList(map);
-                                //save data to database
-                                LiveDao dao = new LiveDao();
-                                dao.setGiftList(list);
+        L.e(TAG, "getGiftListFromServer()");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                L.e(TAG, "getGiftListFromServer()..." + getGiftList().size());
+                if (getGiftList().size() == 0) {
+                    try {
+                        List<Gift> list = LiveManager.getInstance().loadGiftList();
+                        L.e(TAG, "list=" + list);
+                        if (list != null) {
+                            Map<Integer, Gift> map = new HashMap<Integer, Gift>();
+                            for (Gift gift : list) {
+                                map.put(gift.getId(), gift);
                             }
-                        } catch (LiveException e) {
-                            e.printStackTrace();
+                            //save data to cache
+                            setGiftList(map);
+                            //save data to database
+                            LiveDao dao = new LiveDao();
+                            dao.setGiftList(list);
                         }
+                    } catch (LiveException e) {
+                        e.printStackTrace();
                     }
-
                 }
-            }).start();
+
+            }
+        }).start();
 
     }
 
