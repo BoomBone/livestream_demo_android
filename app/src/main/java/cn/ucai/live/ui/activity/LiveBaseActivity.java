@@ -97,12 +97,24 @@ public abstract class LiveBaseActivity extends BaseActivity {
         chatroomId = liveRoom.getChatroomId();
         anchorId = liveRoom.getAnchorId();
         onActivityCreate(savedInstanceState);
-        usernameView.setText(anchorId);
-        EaseUserUtils.setAppUserAvatar(LiveBaseActivity.this,anchorId,useravatarView);
+        loadAnchor(anchorId);
+        initAnchorInfo();
         liveIdView.setText(liveId);
         audienceNumView.setText(String.valueOf(liveRoom.getAudienceNum()));
         watchedCount = liveRoom.getAudienceNum();
     }
+
+    public void initAnchorInfo() {
+
+        if(liveRoom.getNickname()==null){
+            usernameView.setText(anchorId);
+        }else{
+            usernameView.setText(liveRoom.getNickname());
+        }
+        EaseUserUtils.setAppUserAvatar(LiveBaseActivity.this,anchorId,useravatarView);
+    }
+
+    protected abstract void loadAnchor(String anchorId);
 
     protected Handler handler = new Handler();
 

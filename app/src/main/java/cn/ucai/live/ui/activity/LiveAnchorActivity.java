@@ -26,6 +26,7 @@ import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.domain.User;
 import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UNetworkListener;
 import com.ucloud.ulive.UStreamStateListener;
@@ -68,6 +69,29 @@ public class LiveAnchorActivity extends LiveBaseActivity {
             }
         }
     };
+
+    @Override
+    protected void loadAnchor(String anchorId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    User user = LiveManager.getInstance().loadUserInfo(liveRoom.getAnchorId());
+                    liveRoom.setNickname(user.getMUserNick());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initAnchorInfo();
+                        }
+                    });
+                } catch (LiveException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+
+    }
 
     //203138620012364216
     @Override protected void onActivityCreate(@Nullable Bundle savedInstanceState) {

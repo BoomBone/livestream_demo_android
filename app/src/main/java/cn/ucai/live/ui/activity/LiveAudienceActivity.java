@@ -28,6 +28,7 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.easeui.controller.EaseUI;
+import com.hyphenate.easeui.domain.User;
 import com.hyphenate.exceptions.HyphenateException;
 import com.ucloud.uvod.UMediaProfile;
 import com.ucloud.uvod.UPlayerStateListener;
@@ -44,6 +45,28 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
     @BindView(R.id.progress_bar) ProgressBar progressBar;
     @BindView(R.id.loading_text) TextView loadingText;
     @BindView(R.id.cover_image) ImageView coverView;
+
+    @Override
+    protected void loadAnchor(String anchorId) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    User user = LiveManager.getInstance().loadUserInfo(liveRoom.getAnchorId());
+                    liveRoom.setNickname(user.getMUserNick());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            initAnchorInfo();
+                        }
+                    });
+                } catch (LiveException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }).start();
+    }
 
     @Override protected void onActivityCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_live_audience);
