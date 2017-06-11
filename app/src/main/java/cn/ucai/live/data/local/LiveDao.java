@@ -13,11 +13,19 @@ import cn.ucai.live.utils.L;
 
 public class LiveDao {
     private static final String TAG = "LiveDao";
+    /*---------------------礼物的数据库--------------------------*/
+
     public static final String GIFT_TABLE_NAME = "live_gift";
     public static final String GIFT_COLUMN_ID = "gift_id";
     public static final String GIFT_COLUMN_NAME = "gift_name";
     public static final String GIFT_COLUMN_URL = "gift_url";
     public static final String GIFT_COLUMN_PRICE = "gitf_price";
+
+    /*---------------------观众的数据库-----------------------------*/
+    public static final String GET_USER_NICK_TABLE_NAME = "get_user_nick";
+    public static final String USER_NAME = "user_name";
+    public static final String USER_NICK = "user_nick";
+    public static final String AVATAR_URL = "user_avatar_url";
 
     public void setGiftList(List<Gift> list){
         LiveDBManager.getInstance().saveGiftList(list);

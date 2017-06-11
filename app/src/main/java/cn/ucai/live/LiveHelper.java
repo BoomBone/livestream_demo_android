@@ -18,6 +18,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import cn.ucai.live.data.local.LiveDBManager;
 import cn.ucai.live.data.local.LiveDao;
 import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.data.restapi.LiveException;

@@ -13,6 +13,7 @@ import cn.ucai.live.utils.L;
 
 public class LiveDBOpenHelper extends SQLiteOpenHelper {
     private static final String TAG = "LiveDBOpenHelper";
+
     private static int versionNumber = 1;
     private static LiveDBOpenHelper instance;
 
@@ -22,6 +23,12 @@ public class LiveDBOpenHelper extends SQLiteOpenHelper {
             + LiveDao.GIFT_COLUMN_URL + " TEXT, "
             + LiveDao.GIFT_COLUMN_PRICE + " INTEGER, "
             + LiveDao.GIFT_COLUMN_ID + " INTEGER PRIMARY KEY);";
+
+    private static final String GET_USER_NICK_CREATE = "CREATE TABLE "
+            + LiveDao.GET_USER_NICK_TABLE_NAME + " ("
+            + LiveDao.USER_NICK + " TEXT, "
+            + LiveDao.AVATAR_URL + " TEXT, "
+            + LiveDao.USER_NAME + " TEXT PRIMARY KEY);";
 
     public LiveDBOpenHelper(Context context) {
         super(context, getDaseBaseNames(context), null, versionNumber);
@@ -34,8 +41,10 @@ public class LiveDBOpenHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        L.e(TAG,"tablename="+GIFT_TABLE_CREATE);
+        L.e(TAG,"tablename,GIFT_TABLE_CREATE="+GIFT_TABLE_CREATE);
+        L.e(TAG,"tablename,GET_USER_NICK_CREATE="+GET_USER_NICK_CREATE);
         db.execSQL(GIFT_TABLE_CREATE);
+        db.execSQL(GET_USER_NICK_CREATE);
     }
 
     @Override
