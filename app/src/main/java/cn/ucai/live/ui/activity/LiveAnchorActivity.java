@@ -31,6 +31,8 @@ import com.hyphenate.chat.EMChatRoom;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.easeui.controller.EaseUI;
 import com.hyphenate.easeui.domain.User;
+import com.hyphenate.easeui.utils.EaseUserUtils;
+import com.hyphenate.easeui.widget.EaseImageView;
 import com.ucloud.ulive.UFilterProfile;
 import com.ucloud.ulive.UNetworkListener;
 import com.ucloud.ulive.UStreamStateListener;
@@ -182,13 +184,13 @@ public class LiveAnchorActivity extends LiveBaseActivity {
         liveContainer.setVisibility(View.INVISIBLE);
         liveEndView.setVisibility(View.VISIBLE);
         Button liveContinueBtn = (Button) liveEndView.findViewById(R.id.live_close_confirm);
-        TextView usernameView = (TextView) liveEndView.findViewById(R.id.tv_username);
         ImageView closeConfirmView =
                 (ImageView) liveEndView.findViewById(R.id.img_finish_confirmed);
         TextView watchedCountView = (TextView) liveEndView.findViewById(R.id.txt_watched_count);
-        usernameView.setText(EMClient.getInstance().getCurrentUser());
-        watchedCountView.setText(watchedCount + "人看过");
 
+
+        watchedCountView.setText(watchedCount + "人看过");
+        initAnchorCloseInfo();
         liveContinueBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,6 +208,18 @@ public class LiveAnchorActivity extends LiveBaseActivity {
                 finish();
             }
         });
+    }
+
+    private void initAnchorCloseInfo() {
+        TextView usernameView = (TextView) liveEndView.findViewById(R.id.tv_username);
+        EaseImageView avatar = (EaseImageView) findViewById(R.id.iv_close_avatar);
+        if (liveRoom.getNickname() == null) {
+            usernameView.setText(anchorId);
+        } else {
+            usernameView.setText(liveRoom.getNickname());
+        }
+//        usernameView.setText(EMClient.getInstance().getCurrentUser());
+        EaseUserUtils.setAppUserAvatar(LiveAnchorActivity.this, EMClient.getInstance().getCurrentUser(), avatar);
     }
 
     void handleUpdateCountdown(final int count) {

@@ -120,7 +120,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         audienceNumView.setText(String.valueOf(liveRoom.getAudienceNum()));
         watchedCount = liveRoom.getAudienceNum();
     }
-
+/*---------------------------------------设置昵称和头像--------------------------------------------*/
     public void initAnchorInfo() {
 
         if (liveRoom.getNickname() == null) {
