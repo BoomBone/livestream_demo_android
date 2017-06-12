@@ -3,6 +3,7 @@ package cn.ucai.live.data.local;
 import java.util.List;
 import java.util.Map;
 
+import cn.ucai.live.data.model.Audient;
 import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.data.restapi.LiveManager;
 import cn.ucai.live.utils.L;
@@ -27,6 +28,7 @@ public class LiveDao {
     public static final String USER_NICK = "user_nick";
     public static final String AVATAR_URL = "user_avatar_url";
 
+
     public void setGiftList(List<Gift> list){
         LiveDBManager.getInstance().saveGiftList(list);
         L.e(TAG,"save data to database");
@@ -35,4 +37,9 @@ public class LiveDao {
         L.e(TAG,"getGiftList()");
         return LiveDBManager.getInstance().getGiftList();
     }
+
+    public void setAudient(Audient audient) {
+        LiveDBManager.getInstance().saveAudient(audient);
+    }
+
 }

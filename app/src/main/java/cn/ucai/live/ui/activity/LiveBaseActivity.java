@@ -19,12 +19,18 @@ import butterknife.OnClick;
 import com.bumptech.glide.Glide;
 
 import cn.ucai.live.LiveConstants;
+import cn.ucai.live.LiveHelper;
 import cn.ucai.live.R;
 import cn.ucai.live.ThreadPoolManager;
 import cn.ucai.live.data.TestAvatarRepository;
+import cn.ucai.live.data.local.LiveDao;
+import cn.ucai.live.data.model.Audient;
 import cn.ucai.live.data.model.LiveRoom;
+import cn.ucai.live.data.restapi.LiveException;
+import cn.ucai.live.data.restapi.LiveManager;
 import cn.ucai.live.ui.widget.PeriscopeLayout;
 import cn.ucai.live.ui.widget.RoomMessagesView;
+import cn.ucai.live.utils.L;
 import cn.ucai.live.utils.Utils;
 
 import com.hyphenate.EMCallBack;
@@ -35,14 +41,17 @@ import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
+import com.hyphenate.easeui.domain.User;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.exceptions.HyphenateException;
 import com.hyphenate.util.EMLog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by wei on 2016/6/12.
@@ -82,6 +91,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
     protected String anchorId;
 
     protected LiveRoom liveRoom;
+    Audient audient;
+    private String usernick = null;
 
     protected int watchedCount;
     protected int membersCount;
@@ -110,6 +121,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         liveRoom = (LiveRoom) getIntent().getSerializableExtra("liveroom");
+        audient = new Audient();
         liveId = liveRoom.getId();
         chatroomId = liveRoom.getChatroomId();
         anchorId = liveRoom.getAnchorId();
@@ -120,7 +132,16 @@ public abstract class LiveBaseActivity extends BaseActivity {
         audienceNumView.setText(String.valueOf(liveRoom.getAudienceNum()));
         watchedCount = liveRoom.getAudienceNum();
     }
-/*---------------------------------------设置昵称和头像--------------------------------------------*/
+    private void logNum(String tag){
+        if(chatroom!=null)
+            L.e(TAG, tag + "onCreate,chatRoom.getAudienceNum()" + chatroom.getMemberCount());
+        L.e(TAG, tag + "onCreate,liveRoom.getAudienceNum()" + liveRoom.getAudienceNum());
+        L.e(TAG,tag+"onCreate,");
+        L.e(TAG,tag+"onCreate,");
+        L.e(TAG,tag+"onCreate,");
+    }
+
+    /*---------------------------------------设置昵称和头像--------------------------------------------*/
     public void initAnchorInfo() {
 
         if (liveRoom.getNickname() == null) {
@@ -248,6 +269,7 @@ public abstract class LiveBaseActivity extends BaseActivity {
         EMClient.getInstance().chatManager().saveMessage(message);
         messageView.refreshSelectLast();
     }
+
 
 
     EMMessageListener msgListener = new EMMessageListener() {
@@ -392,7 +414,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
         //  newMsgNotifyImage.setVisibility(View.INVISIBLE);
         //}
     }
-/*------------------------点击后显示个人资料------------------------------------------------*/
+
+    /*------------------------点击后显示个人资料------------------------------------------------*/
     private void showUserDetailsDialog(String username) {
         RoomUserDetailsDialog dialog = RoomUserDetailsDialog.newInstance(username, liveRoom);
         dialog.setManageEventListener(new RoomUserDetailsDialog.RoomManageEventListener() {
@@ -457,18 +480,37 @@ public abstract class LiveBaseActivity extends BaseActivity {
             @Override
             public void onSuccess(Void aVoid) {
                 int size = chatroom.getMemberCount();
-                audienceNumView.setText(String.valueOf(size));
-                membersCount = size;
+//                audienceNumView.setText(String.valueOf(size));
+//                membersCount = size;
+                membersCount = liveRoom.getAudienceNum();
+                showMember();
                 //观看人数不包含主播
                 watchedCount = membersCount - 1;
+                audienceNumView.setText(String.valueOf(membersCount));
                 notifyDataSetChanged();
             }
+
 
             @Override
             public void onError(HyphenateException exception) {
 
             }
         });
+    }
+
+    private void showMember() {
+        if(chatroom!=null){
+            memberList.addAll(chatroom.getMemberList());
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    audienceNumView.setText(String.valueOf(membersCount));
+                    notifyDataSetChanged();
+                }
+            });
+        }else {
+
+        }
     }
 
     private synchronized void onRoomMemberAdded(String name) {
@@ -501,8 +543,8 @@ public abstract class LiveBaseActivity extends BaseActivity {
     }
 
     private synchronized void onRoomMemberExited(final String name) {
-        memberList.remove(name);
-        membersCount--;
+        if(memberList.remove(name))
+            membersCount--;
         EMLog.e(TAG, name + "exited");
         runOnUiThread(new Runnable() {
             @Override
@@ -582,7 +624,32 @@ public abstract class LiveBaseActivity extends BaseActivity {
                 }
             });
             //暂时使用测试数据，修改的地方
-            EaseUserUtils.setAppUserAvatar(LiveBaseActivity.this,namelist.get(position),holder.Avatar);
+            EaseUserUtils.setAppUserAvatar(context, namelist.get(position), holder.Avatar);
+
+
+           /*-----------------------------------------保存数据--------------------------------------------*/
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        User user = LiveManager.getInstance().loadUserInfo(namelist.get(position));
+//                        String nickname = user.getMUserNick();
+//                        audient.setUsername(namelist.get(position));
+//                        audient.setNickname(nickname);
+//                        //save to cache
+//                        Map<String, Audient> map = new HashMap<>();
+//                        map.put(namelist.get(position), audient);
+//
+//                        //save to database
+//                        LiveDao dao = new LiveDao();
+//                        dao.setAudient(audient);
+//                    } catch (LiveException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }).start();
+
+
 //            Glide.with(context)
 //                    .load(avatarRepository.getAvatar())
 //                    .placeholder(R.drawable.ease_default_avatar)

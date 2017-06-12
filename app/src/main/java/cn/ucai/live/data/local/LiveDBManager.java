@@ -3,12 +3,15 @@ package cn.ucai.live.data.local;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.provider.Settings;
 
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import cn.ucai.live.I;
 import cn.ucai.live.LiveApplication;
+import cn.ucai.live.data.model.Audient;
 import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.utils.L;
 
@@ -61,7 +64,7 @@ public class LiveDBManager {
      * @return
      */
     synchronized public Map<Integer, Gift> getGiftList() {
-        L.e(TAG,"getGiftList()");
+        L.e(TAG, "getGiftList()");
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Map<Integer, Gift> gifts = new Hashtable<Integer, Gift>();
         if (db.isOpen()) {
@@ -80,7 +83,39 @@ public class LiveDBManager {
             }
             cursor.close();
         }
-        L.e(TAG,"gift="+gifts);
+        L.e(TAG, "gift=" + gifts);
         return gifts;
+    }
+
+    synchronized public void saveAudient(Audient audient) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        if (db.isOpen()) {
+            db.delete(LiveDao.GET_USER_NICK_TABLE_NAME, null, null);
+            ContentValues values = new ContentValues();
+            values.put(LiveDao.USER_NAME, audient.getUsername());
+            if (audient.getNickname() != null) {
+                values.put(LiveDao.USER_NICK, audient.getNickname());
+            }
+            values.put(LiveDao.AVATAR_URL, System.currentTimeMillis());
+
+            db.replace(LiveDao.GET_USER_NICK_TABLE_NAME, null, values);
+            //insert into students (stu_id,stu_name,stu_birthday,stu_phone,stu_age,stu_address) values (1004,'吴小飞','1993-08-06','18888666666',24,'北京市北京优才')
+            //插入
+
+        }
+    }
+
+    synchronized public String getAudient(String username) {
+        L.e(TAG, "getGiftList()");
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String userNick = null;
+        if (db.isOpen()) {
+            String sql = "select " + LiveDao.USER_NICK + " from " + LiveDao.GET_USER_NICK_TABLE_NAME + " where " + LiveDao.USER_NAME + " = " + username;
+            L.e(TAG,"sql="+sql);
+            Cursor cursor = db.rawQuery(sql, null);
+            userNick = cursor.getString(cursor.getColumnIndex(LiveDao.USER_NICK));
+            cursor.close();
+        }
+        return userNick;
     }
 }
