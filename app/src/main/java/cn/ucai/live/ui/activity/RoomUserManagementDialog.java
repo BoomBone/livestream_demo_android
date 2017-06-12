@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
 import cn.ucai.live.R;
 
 /**
@@ -25,16 +26,26 @@ public class RoomUserManagementDialog extends DialogFragment {
     TabLayout tabLayout;
     ViewPager viewPager;
 
-    public RoomUserManagementDialog(){}
-
-    public RoomUserManagementDialog(String chatroomId){
-        this.chatroomId = chatroomId;
+    public RoomUserManagementDialog() {
     }
 
-    @Nullable @Override
+//    public RoomUserManagementDialog(String chatroomId) {
+//        this.chatroomId = chatroomId;
+//    }
+
+    public static RoomUserManagementDialog newInstance(String chatroomId) {
+        RoomUserManagementDialog dialog = new RoomUserManagementDialog();
+        Bundle args = new Bundle();
+        args.putString("chatroomId", chatroomId);
+        dialog.setArguments(args);
+        return dialog;
+    }
+
+    @Nullable
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.dialog_room_user_management, container, false);
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.dialog_room_user_management, container, false);
         Window window = getDialog().getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.getDecorView().setPadding(0, 0, 0, 0);
@@ -45,25 +56,31 @@ public class RoomUserManagementDialog extends DialogFragment {
         return view;
     }
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         tabLayout = (TabLayout) getView().findViewById(R.id.tabs);
         viewPager = (ViewPager) getView().findViewById(R.id.viewpager);
-
+        if (getArguments() != null) {
+            this.chatroomId = getArguments().getString("chatroomId");
+        }
 
         setupViewPager();
         tabLayout.setupWithViewPager(viewPager);
     }
 
     private void setupViewPager() {
-        FragmentAdapter adapter = new FragmentAdapter(getChildFragmentManager());
-        adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
-                RoomUserManagementFragment.ManagementType.ADMIN), "房管");
-        adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
-                RoomUserManagementFragment.ManagementType.MUTE), "禁言");
-        adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
-                RoomUserManagementFragment.ManagementType.BLACKLIST), "黑名单");
-        viewPager.setAdapter(adapter);
+        if (chatroomId != null) {
+            FragmentAdapter adapter = new FragmentAdapter(getChildFragmentManager());
+            adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
+                    RoomUserManagementFragment.ManagementType.ADMIN), "房管");
+            adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
+                    RoomUserManagementFragment.ManagementType.MUTE), "禁言");
+            adapter.addFragment(RoomUserManagementFragment.newInstance(chatroomId,
+                    RoomUserManagementFragment.ManagementType.BLACKLIST), "黑名单");
+            viewPager.setAdapter(adapter);
+        }
+
     }
 }
