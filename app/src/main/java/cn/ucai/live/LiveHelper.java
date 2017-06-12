@@ -42,6 +42,7 @@ public class LiveHelper {
     private User currentAppUser = null;
     private Map<Integer, Gift> giftMap;
     private EaseUI easeUI;
+    private Map<String, User> appContactList;
 
     public LiveHelper() {
     }
@@ -97,16 +98,28 @@ public class LiveHelper {
             }
         });
     }
-    private User getAppUserInfo(String username){
+
+    //    private User getAppUserInfo(String username) {
+//        User user = null;
+//        if (username == EMClient.getInstance().getCurrentUser()) {
+//            return getCurrentAppUserInfo();
+//        }
+//        if (user == null) {
+//            user = new User(username);
+//        }
+//        return user;
+//    }
+    private User getAppUserInfo(String username) {
         User user = null;
-        if(username==EMClient.getInstance().getCurrentUser()){
+        if (username.equals(EMClient.getInstance().getCurrentUser()))
             return getCurrentAppUserInfo();
-        }
-        if(user==null){
+        user = getAppContactList().get(username);
+        if (user == null) {
             user = new User(username);
         }
         return user;
     }
+
 
     /**
      * user met some exception: conflict, removed or forbidden
@@ -127,6 +140,7 @@ public class LiveHelper {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 try {
                     User user = LiveManager.getInstance().loadUserInfo(username);
                     if (user != null) {
@@ -136,6 +150,7 @@ public class LiveHelper {
                 } catch (LiveException e) {
                     e.printStackTrace();
                 }
+
             }
         }).start();
     }
@@ -253,9 +268,19 @@ public class LiveHelper {
         }).start();
 
     }
-    /*---------------------------从服务器获取用户昵称--------------------------------------*/
 
+    /*---------------------保存到内存----------------------------*/
+    public void saveAppContact(User user) {
+        L.e(TAG, "saveAppContact,user1=" + user);
+        getAppContactList().put(user.getMUserName(), user);
+        L.e(TAG, "saveAppContact,user2=" + getAppContactList().get(user.getMUserName()));
+    }
 
-
-
+    /*-----------------从内存中获取昵称-------------------------------*/
+    public Map<String, User> getAppContactList() {
+        if (appContactList == null) {
+            appContactList = new HashMap<String, User>();
+        }
+        return appContactList;
+    }
 }

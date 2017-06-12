@@ -82,7 +82,6 @@ public class RoomUserDetailsDialog extends DialogFragment {
     }
 
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -112,24 +111,50 @@ public class RoomUserDetailsDialog extends DialogFragment {
 
         if (username != null) {
             /*昵称与头像设置的位置*/
-            loadAudientInfo(username);
-            initAudientInfo();
+//            loadAudientInfo(username);
+//            initAudientInfo();
+            usernameView.setText(username);
+            EaseUserUtils.setAppUserAvatar(getContext(), username, mAvatar);
+            EaseUserUtils.setAppUserNick(username, usernameView);
         }
-        //mentionBtn.setText("@TA");
+        syncUserInfo();
+    }
+
+    private void syncUserInfo() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!LiveHelper.getInstance().getAppContactList().containsKey(username)) {
+                    try {
+                        User user = LiveManager.getInstance().loadUserInfo(username);
+                        LiveHelper.getInstance().saveAppContact(user);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                EaseUserUtils.setAppUserNick(username, usernameView);
+                            }
+                        });
+                    } catch (LiveException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }).start();
     }
 
     private void initAudientInfo() {
-        L.e(TAG,"initAudientInfo(),audient.getNickname()="+audient.getNickname());
-        if(audient.getNickname()==null){
+        L.e(TAG, "initAudientInfo(),audient.getNickname()=" + audient.getNickname());
+        if (audient.getNickname() == null) {
             usernameView.setText(username);
-        }else{
+        } else {
             usernameView.setText(audient.getNickname());
         }
-        EaseUserUtils.setAppUserAvatar(getActivity(),username,mAvatar);
+        EaseUserUtils.setAppUserAvatar(getActivity(), username, mAvatar);
     }
 
     private void loadAudientInfo(final String audientId) {
-        L.e(TAG,"loadAudientInfo,audientId="+audientId);
+        L.e(TAG, "loadAudientInfo,audientId=" + audientId);
         new Thread(new Runnable() {
             @Override
             public void run() {

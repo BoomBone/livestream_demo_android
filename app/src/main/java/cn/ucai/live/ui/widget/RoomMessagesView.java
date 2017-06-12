@@ -18,8 +18,11 @@ import android.widget.Toast;
 
 import cn.ucai.live.LiveHelper;
 import cn.ucai.live.R;
+import cn.ucai.live.data.local.LiveDBManager;
+import cn.ucai.live.data.model.Audient;
 import cn.ucai.live.data.restapi.LiveException;
 import cn.ucai.live.data.restapi.LiveManager;
+import cn.ucai.live.ui.activity.LiveBaseActivity;
 import cn.ucai.live.utils.L;
 
 import com.hyphenate.chat.EMClient;
@@ -28,10 +31,12 @@ import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.domain.User;
 
+import java.util.Map;
+
 /**
  * Created by wei on 2016/6/3.
  */
-public class RoomMessagesView extends RelativeLayout{
+public class RoomMessagesView extends RelativeLayout {
     private static final String TAG = "RoomMessagesView";
     private EMConversation conversation;
     ListAdapter adapter;
@@ -60,7 +65,7 @@ public class RoomMessagesView extends RelativeLayout{
         init(context, attrs);
     }
 
-    private void init(Context context, AttributeSet attrs){
+    private void init(Context context, AttributeSet attrs) {
         LayoutInflater.from(context).inflate(R.layout.widget_room_messages, this);
         listview = (RecyclerView) findViewById(R.id.listview);
         editview = (EditText) findViewById(R.id.edit_text);
@@ -71,11 +76,11 @@ public class RoomMessagesView extends RelativeLayout{
 
     }
 
-    public EditText getInputView(){
+    public EditText getInputView() {
         return editview;
     }
 
-    public void init(String chatroomId){
+    public void init(String chatroomId) {
         conversation = EMClient.getInstance().chatManager().getConversation(chatroomId, EMConversation.EMConversationType.ChatRoom, true);
         adapter = new ListAdapter(getContext(), conversation);
         listview.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -83,8 +88,8 @@ public class RoomMessagesView extends RelativeLayout{
         sendBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(messageViewListener != null){
-                    if(TextUtils.isEmpty(editview.getText())){
+                if (messageViewListener != null) {
+                    if (TextUtils.isEmpty(editview.getText())) {
                         Toast.makeText(getContext(), "文字内容不能为空！", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -97,7 +102,7 @@ public class RoomMessagesView extends RelativeLayout{
             @Override
             public void onClick(View v) {
                 setShowInputView(false);
-                if(messageViewListener != null){
+                if (messageViewListener != null) {
                     messageViewListener.onHiderBottomBar();
                 }
             }
@@ -118,46 +123,51 @@ public class RoomMessagesView extends RelativeLayout{
 
     }
 
-    public void setShowInputView(boolean showInputView){
-        if(showInputView){
+    public void setShowInputView(boolean showInputView) {
+        if (showInputView) {
             sendContainer.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             sendContainer.setVisibility(View.INVISIBLE);
         }
     }
 
     private MessageViewListener messageViewListener;
-    public interface MessageViewListener{
+
+    public interface MessageViewListener {
         void onMessageSend(String content);
+
         void onItemClickListener(EMMessage message);
+
         void onHiderBottomBar();
     }
 
-    public void setMessageViewListener(MessageViewListener messageViewListener){
+    public void setMessageViewListener(MessageViewListener messageViewListener) {
         this.messageViewListener = messageViewListener;
     }
 
-    public void refresh(){
-        if(adapter != null){
+    public void refresh() {
+        if (adapter != null) {
             adapter.refresh();
         }
     }
 
-    public void refreshSelectLast(){
-        if(adapter != null){
+    public void refreshSelectLast() {
+        if (adapter != null) {
             adapter.refresh();
-            listview.smoothScrollToPosition(adapter.getItemCount()-1);
+            listview.smoothScrollToPosition(adapter.getItemCount() - 1);
         }
     }
 
 
-    private class ListAdapter extends RecyclerView.Adapter<MyViewHolder>{
+    private class ListAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         private final Context context;
         EMMessage[] messages;
+        String username = null;
+        Audient audient=null;
 
 
-        public ListAdapter(Context context, EMConversation conversation){
+        public ListAdapter(Context context, EMConversation conversation) {
             this.context = context;
             messages = conversation.getAllMessages().toArray(new EMMessage[0]);
         }
@@ -170,17 +180,11 @@ public class RoomMessagesView extends RelativeLayout{
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
             final EMMessage message = messages[position];
-            if(message.getBody() instanceof EMTextMessageBody) {
+            audient = new Audient();
+            if (message.getBody() instanceof EMTextMessageBody) {
                 /*----------------------------添加昵称------------------------------------*/
-                String username = message.getFrom();
-                L.e(TAG,"username1="+username);
-                L.e(TAG,"EMClient.getInstance().getCurrentUser()="+EMClient.getInstance().getCurrentUser());
-                if(username.equals(EMClient.getInstance().getCurrentUser())){
-                    username = LiveHelper.getInstance().getCurrentAppUserInfo().getMUserNick();
-                    L.e(TAG,"username2="+username);
-                }
-
-                holder.name.setText(username);
+                username = message.getFrom();
+                initNickName(holder,audient);
                 holder.content.setText(((EMTextMessageBody) message.getBody()).getMessage());
                 if (EMClient.getInstance().getCurrentUser().equals(message.getFrom())) {
                     holder.content.setTextColor(getResources().getColor(R.color.color_room_my_msg));
@@ -188,7 +192,8 @@ public class RoomMessagesView extends RelativeLayout{
                     holder.content.setTextColor(getResources().getColor(R.color.common_white));
                 }
                 holder.itemView.setOnClickListener(new OnClickListener() {
-                    @Override public void onClick(View v) {
+                    @Override
+                    public void onClick(View v) {
                         if (messageViewListener != null) {
                             messageViewListener.onItemClickListener(message);
                         }
@@ -197,14 +202,44 @@ public class RoomMessagesView extends RelativeLayout{
             }
         }
 
+        private void initNickName(MyViewHolder holder,Audient audient) {
+            L.e(TAG, "username1=" + username);
+            L.e(TAG, "EMClient.getInstance().getCurrentUser()=" + EMClient.getInstance().getCurrentUser());
+            if (username.equals(EMClient.getInstance().getCurrentUser())) {
+                username = LiveHelper.getInstance().getCurrentAppUserInfo().getMUserNick();
+                L.e(TAG, "username2=" + username);
+
+            }
+            holder.name.setText(username);
+        }
+
+//        private void loadAudientInfo(final String usernick, final MyViewHolder holder) {
+//            L.e(TAG,"loadAudientInfo="+usernick);
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        User user = LiveManager.getInstance().loadUserInfo(usernick);
+//                        username = user.getMUserNick();
+//                        holder.name.setText(username);
+//                    } catch (LiveException e) {
+//                        e.printStackTrace();
+//                        username = usernick;
+//                        holder.name.setText(username);
+//                    }
+//                }
+//            }).start();
+//
+//        }
+
         @Override
         public int getItemCount() {
             return messages.length;
         }
 
-        public void refresh(){
+        public void refresh() {
             messages = conversation.getAllMessages().toArray(new EMMessage[0]);
-            ((Activity)getContext()).runOnUiThread(new Runnable() {
+            ((Activity) getContext()).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     notifyDataSetChanged();
@@ -216,9 +251,11 @@ public class RoomMessagesView extends RelativeLayout{
 
 
 
-    private class MyViewHolder extends RecyclerView.ViewHolder{
+
+    private class MyViewHolder extends RecyclerView.ViewHolder {
         TextView name;
         TextView content;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);

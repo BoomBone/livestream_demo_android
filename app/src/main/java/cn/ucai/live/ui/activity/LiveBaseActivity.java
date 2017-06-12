@@ -134,11 +134,11 @@ public abstract class LiveBaseActivity extends BaseActivity {
     }
     private void logNum(String tag){
         if(chatroom!=null)
-            L.e(TAG, tag + "onCreate,chatRoom.getAudienceNum()" + chatroom.getMemberCount());
-        L.e(TAG, tag + "onCreate,liveRoom.getAudienceNum()" + liveRoom.getAudienceNum());
-        L.e(TAG,tag+"onCreate,");
-        L.e(TAG,tag+"onCreate,");
-        L.e(TAG,tag+"onCreate,");
+            L.e(TAG, tag + ",chatRoom.getAudienceNum()=" + chatroom.getMemberCount());
+        L.e(TAG, tag + ",liveRoom.getAudienceNum()=" + liveRoom.getAudienceNum());
+        L.e(TAG,tag+",memberList.size()="+memberList.size());
+        L.e(TAG,tag+",membersCount"+membersCount);
+        L.e(TAG,tag+",watchedCount"+watchedCount);
     }
 
     /*---------------------------------------设置昵称和头像--------------------------------------------*/
