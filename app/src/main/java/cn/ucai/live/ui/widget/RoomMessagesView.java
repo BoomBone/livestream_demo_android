@@ -30,6 +30,7 @@ import com.hyphenate.chat.EMConversation;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.domain.User;
+import com.hyphenate.easeui.utils.EaseUserUtils;
 
 import java.util.Map;
 
@@ -184,7 +185,8 @@ public class RoomMessagesView extends RelativeLayout {
             if (message.getBody() instanceof EMTextMessageBody) {
                 /*----------------------------添加昵称------------------------------------*/
                 username = message.getFrom();
-                initNickName(holder,audient);
+                EaseUserUtils.setAppUserNick(username,holder.name);
+//                initNickName(holder,audient);
                 holder.content.setText(((EMTextMessageBody) message.getBody()).getMessage());
                 if (EMClient.getInstance().getCurrentUser().equals(message.getFrom())) {
                     holder.content.setTextColor(getResources().getColor(R.color.color_room_my_msg));

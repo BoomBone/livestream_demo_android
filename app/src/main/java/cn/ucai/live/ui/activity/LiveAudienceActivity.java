@@ -30,12 +30,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.ucai.live.LiveConstants;
+import cn.ucai.live.LiveHelper;
 import cn.ucai.live.R;
 import cn.ucai.live.ThreadPoolManager;
+import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.data.restapi.LiveException;
 import cn.ucai.live.data.restapi.LiveManager;
 import cn.ucai.live.data.restapi.model.LiveStatusModule;
 import cn.ucai.live.data.restapi.model.StatisticsType;
+import cn.ucai.live.utils.L;
 
 public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerStateListener {
 
@@ -52,7 +55,7 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
     TextView loadingText;
     @BindView(R.id.cover_image)
     ImageView coverView;
-    @BindView(R.id.gift_image)
+    @BindView(R.id.gift_image_bottom)
     ImageView giftImage;
 
     @Override
@@ -328,11 +331,26 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
             sendPraiseThread.start();
         }
     }
-    @OnClick(R.id.gift_image)
-    public void onGiftClicked() {
-        GiftListDialog giftDialog = GiftListDialog.newInstance();
-        giftDialog.show(getSupportFragmentManager(), "GiftDialog");
-    }
+//    @OnClick(R.id.gift_image_bottom)
+//    public void onGiftClicked() {
+//        final GiftListDialog giftDialog = GiftListDialog.newInstance();
+//
+//        giftDialog.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int giftId = (int) v.getTag();
+//                sendGift(giftId);
+//            }
+//        });
+//        giftDialog.show(getSupportFragmentManager(), "GiftDialog");
+//
+//    }
+//
+//    private void sendGift(int giftId) {
+//        L.e(TAG,"sendGift,giftId"+giftId);
+//        Gift gift = LiveHelper.getInstance().getGiftList().get(giftId);
+//        onPresentImageClick();
+//    }
 
 
     private void sendPraiseMessage(int praiseCount) {

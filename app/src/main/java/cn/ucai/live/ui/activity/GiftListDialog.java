@@ -49,7 +49,13 @@ public class GiftListDialog extends DialogFragment {
     TextView tvRecharge;
     Unbinder unbinder;
     GiftAdapter adapter;
-    static List<Gift> list;
+    List<Gift> list;
+
+    public void setOnClickListener(View.OnClickListener listener) {
+        mOnClickListener = listener;
+    }
+
+    View.OnClickListener mOnClickListener;
 
     public GiftListDialog() {
     }
@@ -60,9 +66,6 @@ public class GiftListDialog extends DialogFragment {
 
     public static GiftListDialog newInstance() {
         GiftListDialog dialog = new GiftListDialog();
-        if(list!=null){
-            list.clear();
-        }
         return dialog;
     }
 
@@ -85,16 +88,14 @@ public class GiftListDialog extends DialogFragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-            list = LiveHelper.getInstance().getGiftLists();
-            if (list.size() > 0) {
-                initView();
-                initData(list);
-            } else {
-                //download gift list data
-                LiveHelper.getInstance().getGiftListFromServer();
-            }
-
-
+        list = LiveHelper.getInstance().getGiftLists();
+        if (list.size() > 0) {
+            initView();
+            initData(list);
+        } else {
+            //download gift list data
+            LiveHelper.getInstance().getGiftListFromServer();
+        }
 
 
     }
@@ -128,16 +129,20 @@ public class GiftListDialog extends DialogFragment {
 
         @Override
         public GiftHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            final GiftHolder holder = new GiftHolder(View.inflate(context,R.layout.item_gift, null));
+            final GiftHolder holder = new GiftHolder(View.inflate(context, R.layout.item_gift, null));
             return holder;
         }
 
         @Override
         public void onBindViewHolder(GiftHolder holder, int position) {
             Gift gift = giftList.get(position);
-            holder.tvGiftName.setText(gift.getGname());
-            holder.tvGiftPrice.setText("¥"+gift.getGprice());
-            EaseUserUtils.setAppGift(context,gift.getGurl(),holder.ivGiftThumb);
+            if (gift != null) {
+                holder.tvGiftName.setText(gift.getGname());
+                holder.tvGiftPrice.setText("¥" + gift.getGprice());
+                EaseUserUtils.setAppGift(context, gift.getGurl(), holder.ivGiftThumb);
+                holder.itemView.setTag(gift.getId());
+                holder.itemView.setOnClickListener(mOnClickListener);
+            }
         }
 
         @Override

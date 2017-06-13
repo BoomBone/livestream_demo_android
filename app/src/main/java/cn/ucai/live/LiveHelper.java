@@ -248,21 +248,22 @@ public class LiveHelper {
     public List<Gift> getGiftLists(){
         if(giftList==null){
             giftList = new ArrayList<>();
-        }
-        //数据库有礼物,遍历
-        if(getGiftList().size()>0){
-            Iterator<Map.Entry<Integer, Gift>> iterator = giftMap.entrySet().iterator();
-            while (iterator.hasNext()){
-                giftList.add(iterator.next().getValue());
-            }
-            //排序
-            Collections.sort(giftList, new Comparator<Gift>() {
-                @Override
-                public int compare(Gift o1, Gift o2) {
-                    return o1.getGprice()-o2.getGprice();
+            //数据库有礼物,遍历
+            if(getGiftList().size()>0){
+                Iterator<Map.Entry<Integer, Gift>> iterator = giftMap.entrySet().iterator();
+                while (iterator.hasNext()){
+                    giftList.add(iterator.next().getValue());
                 }
-            });
+                //排序
+                Collections.sort(giftList, new Comparator<Gift>() {
+                    @Override
+                    public int compare(Gift o1, Gift o2) {
+                        return o1.getGprice()-o2.getGprice();
+                    }
+                });
+            }
         }
+
         return giftList;
     }
     /*----------------------从服务器获取礼物列表-----------------------------------------*/
