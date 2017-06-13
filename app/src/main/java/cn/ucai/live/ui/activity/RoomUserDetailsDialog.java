@@ -77,7 +77,6 @@ public class RoomUserDetailsDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.fragment_room_user_details, container, false);
         unbinder = ButterKnife.bind(this, view);
         customDialog();
-
         return view;
     }
 

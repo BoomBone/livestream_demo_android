@@ -13,8 +13,13 @@ import com.hyphenate.easeui.domain.User;
 import com.hyphenate.easeui.model.EasePreferenceManager;
 import com.hyphenate.util.EMLog;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +48,7 @@ public class LiveHelper {
     private Map<Integer, Gift> giftMap;
     private EaseUI easeUI;
     private Map<String, User> appContactList;
+    private List<Gift> giftList;
 
     public LiveHelper() {
     }
@@ -231,41 +237,63 @@ public class LiveHelper {
 
         // return a empty non-null object to avoid app crash
         if (giftMap == null) {
+            giftMap = new HashMap<>();
             return new HashMap<Integer, Gift>();
         }
 
         return giftMap;
     }
 
+    /*-----------------------获取礼物列表----------------------------------------*/
+    public List<Gift> getGiftLists(){
+        if(giftList==null){
+            giftList = new ArrayList<>();
+        }
+        //数据库有礼物,遍历
+        if(getGiftList().size()>0){
+            Iterator<Map.Entry<Integer, Gift>> iterator = giftMap.entrySet().iterator();
+            while (iterator.hasNext()){
+                giftList.add(iterator.next().getValue());
+            }
+            //排序
+            Collections.sort(giftList, new Comparator<Gift>() {
+                @Override
+                public int compare(Gift o1, Gift o2) {
+                    return o1.getGprice()-o2.getGprice();
+                }
+            });
+        }
+        return giftList;
+    }
     /*----------------------从服务器获取礼物列表-----------------------------------------*/
     public void getGiftListFromServer() {
-        L.e(TAG, "getGiftListFromServer()");
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                L.e(TAG, "getGiftListFromServer()..." + getGiftList().size());
-                if (getGiftList().size() == 0) {
-                    try {
-                        List<Gift> list = LiveManager.getInstance().loadGiftList();
-                        L.e(TAG, "list=" + list);
-                        if (list != null) {
-                            Map<Integer, Gift> map = new HashMap<Integer, Gift>();
-                            for (Gift gift : list) {
-                                map.put(gift.getId(), gift);
+            L.e(TAG, "getGiftListFromServer()");
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    L.e(TAG, "getGiftListFromServer()..." + getGiftList().size());
+                    if (getGiftList().size() == 0) {
+                        try {
+                            List<Gift> list = LiveManager.getInstance().loadGiftList();
+                            L.e(TAG, "list=" + list);
+                            if (list != null) {
+                                Map<Integer, Gift> map = new HashMap<Integer, Gift>();
+                                for (Gift gift : list) {
+                                    map.put(gift.getId(), gift);
+                                }
+                                //save data to cache
+                                setGiftList(map);
+                                //save data to database
+                                LiveDao dao = new LiveDao();
+                                dao.setGiftList(list);
                             }
-                            //save data to cache
-                            setGiftList(map);
-                            //save data to database
-                            LiveDao dao = new LiveDao();
-                            dao.setGiftList(list);
+                        } catch (LiveException e) {
+                            e.printStackTrace();
                         }
-                    } catch (LiveException e) {
-                        e.printStackTrace();
                     }
-                }
 
-            }
-        }).start();
+                }
+            }).start();
 
     }
 

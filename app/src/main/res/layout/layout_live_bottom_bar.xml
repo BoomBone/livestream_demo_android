@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_toRightOf="@id/user_manager_image"
-        android:src="@drawable/gift_default"
+        android:src="@drawable/live_button_present_selector"
         android:visibility="gone"
         />
 

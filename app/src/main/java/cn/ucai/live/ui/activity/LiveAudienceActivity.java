@@ -9,18 +9,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.ucai.live.LiveConstants;
-import cn.ucai.live.ThreadPoolManager;
-import cn.ucai.live.data.restapi.LiveException;
-import cn.ucai.live.data.restapi.LiveManager;
-import cn.ucai.live.data.restapi.model.LiveStatusModule;
-import cn.ucai.live.data.restapi.model.StatisticsType;
 
 import com.bumptech.glide.Glide;
-import cn.ucai.live.R;
 import com.hyphenate.EMError;
 import com.hyphenate.EMValueCallBack;
 import com.hyphenate.chat.EMChatRoom;
@@ -33,18 +23,37 @@ import com.hyphenate.exceptions.HyphenateException;
 import com.ucloud.uvod.UMediaProfile;
 import com.ucloud.uvod.UPlayerStateListener;
 import com.ucloud.uvod.widget.UVideoView;
+
 import java.util.Random;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.ucai.live.LiveConstants;
+import cn.ucai.live.R;
+import cn.ucai.live.ThreadPoolManager;
+import cn.ucai.live.data.restapi.LiveException;
+import cn.ucai.live.data.restapi.LiveManager;
+import cn.ucai.live.data.restapi.model.LiveStatusModule;
+import cn.ucai.live.data.restapi.model.StatisticsType;
 
 public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerStateListener {
 
     String rtmpPlayStreamUrl = "rtmp://vlive3.rtmp.cdn.ucloud.com.cn/ucloud/";
+
     private UVideoView mVideoView;
     private UMediaProfile profile;
 
-    @BindView(R.id.loading_layout) RelativeLayout loadingLayout;
-    @BindView(R.id.progress_bar) ProgressBar progressBar;
-    @BindView(R.id.loading_text) TextView loadingText;
-    @BindView(R.id.cover_image) ImageView coverView;
+    @BindView(R.id.loading_layout)
+    RelativeLayout loadingLayout;
+    @BindView(R.id.progress_bar)
+    ProgressBar progressBar;
+    @BindView(R.id.loading_text)
+    TextView loadingText;
+    @BindView(R.id.cover_image)
+    ImageView coverView;
+    @BindView(R.id.gift_image)
+    ImageView giftImage;
 
     @Override
     protected void loadAnchor(String anchorId) {
@@ -68,12 +77,14 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         }).start();
     }
 
-    @Override protected void onActivityCreate(@Nullable Bundle savedInstanceState) {
+    @Override
+    protected void onActivityCreate(@Nullable Bundle savedInstanceState) {
         setContentView(R.layout.activity_live_audience);
         ButterKnife.bind(this);
 
         switchCameraView.setVisibility(View.INVISIBLE);
         likeImageView.setVisibility(View.VISIBLE);
+        giftImage.setVisibility(View.VISIBLE);
 
 
         Glide.with(this).load(liveRoom.getCover()).placeholder(R.color.placeholder).into(coverView);
@@ -82,20 +93,23 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
 
         connect();
     }
-    private void connect(){
+
+    private void connect() {
         connectChatServer();
     }
 
-    private void connectChatServer(){
+    private void connectChatServer() {
 
         executeTask(new ThreadPoolManager.Task<LiveStatusModule.LiveStatus>() {
-            @Override public LiveStatusModule.LiveStatus onRequest() throws HyphenateException {
+            @Override
+            public LiveStatusModule.LiveStatus onRequest() throws HyphenateException {
                 return LiveManager.getInstance().getLiveRoomStatus(liveId);
             }
 
-            @Override public void onSuccess(LiveStatusModule.LiveStatus status) {
+            @Override
+            public void onSuccess(LiveStatusModule.LiveStatus status) {
                 loadingLayout.setVisibility(View.INVISIBLE);
-                switch (status){
+                switch (status) {
                     case completed: //complete状态允许用户加入聊天室
                         showLongToast("直播已结束");
                     case ongoing:
@@ -113,7 +127,8 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
 
             }
 
-            @Override public void onError(HyphenateException exception) {
+            @Override
+            public void onError(HyphenateException exception) {
                 loadingLayout.setVisibility(View.INVISIBLE);
                 showToast("加载失败");
             }
@@ -125,27 +140,29 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         EMClient.getInstance()
                 .chatroomManager()
                 .joinChatRoom(chatroomId, new EMValueCallBack<EMChatRoom>() {
-                    @Override public void onSuccess(EMChatRoom emChatRoom) {
+                    @Override
+                    public void onSuccess(EMChatRoom emChatRoom) {
                         chatroom = emChatRoom;
                         addChatRoomChangeListener();
                         onMessageListInit();
                         //postUserChangeEvent(StatisticsType.JOIN, EMClient.getInstance().getCurrentUser());
                     }
 
-                    @Override public void onError(int i, String s) {
-                        if(i == EMError.GROUP_PERMISSION_DENIED || i == EMError.CHATROOM_PERMISSION_DENIED){
+                    @Override
+                    public void onError(int i, String s) {
+                        if (i == EMError.GROUP_PERMISSION_DENIED || i == EMError.CHATROOM_PERMISSION_DENIED) {
                             showLongToast("你没有权限加入此房间");
                             finish();
-                        }else if(i == EMError.CHATROOM_MEMBERS_FULL){
+                        } else if (i == EMError.CHATROOM_MEMBERS_FULL) {
                             showLongToast("房间成员已满");
                             finish();
                         }
-                        showLongToast("加入聊天室失败: " +s);
+                        showLongToast("加入聊天室失败: " + s);
                     }
                 });
     }
 
-    private void connectLiveStream(){
+    private void connectLiveStream() {
         profile = new UMediaProfile();
         profile.setInteger(UMediaProfile.KEY_START_ON_PREPARED, 1);
         profile.setInteger(UMediaProfile.KEY_ENABLE_BACKGROUND_PLAY, 0);
@@ -167,14 +184,15 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         mVideoView.setOnPlayerStateListener(this);//set before setVideoPath
         mVideoView.setVideoPath(liveRoom.getLivePullUrl());
 
-        InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         //if(getWindow().getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE){
-            messageView.getInputView().requestFocus();
-            messageView.getInputView().requestFocusFromTouch();
+        messageView.getInputView().requestFocus();
+        messageView.getInputView().requestFocusFromTouch();
         //}
     }
 
-    @Override protected void onResume() {
+    @Override
+    protected void onResume() {
         super.onResume();
         mVideoView.onResume();
         if (isMessageListInited) messageView.refresh();
@@ -183,12 +201,14 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         EMClient.getInstance().chatManager().addMessageListener(msgListener);
     }
 
-    @Override protected void onPause() {
+    @Override
+    protected void onPause() {
         super.onPause();
         mVideoView.onPause();
     }
 
-    @Override public void onStop() {
+    @Override
+    public void onStop() {
         super.onStop();
         // unregister this event listener when this activity enters the
         // background
@@ -198,9 +218,10 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         EaseUI.getInstance().popActivity(this);
     }
 
-    @Override protected void onDestroy() {
+    @Override
+    protected void onDestroy() {
         super.onDestroy();
-        if(isMessageListInited) {
+        if (isMessageListInited) {
             EMClient.getInstance().chatroomManager().leaveChatRoom(chatroomId);
 
             //postUserChangeEvent(StatisticsType.LEAVE, EMClient.getInstance().getCurrentUser());
@@ -215,7 +236,8 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         mVideoView.onDestroy();
     }
 
-    @Override public void onPlayerStateChanged(State state, int i, Object o) {
+    @Override
+    public void onPlayerStateChanged(State state, int i, Object o) {
         switch (state) {
             case START:
                 isSteamConnected = true;
@@ -233,10 +255,12 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         }
     }
 
-    @Override public void onPlayerInfo(Info info, int extra1, Object o) {
+    @Override
+    public void onPlayerInfo(Info info, int extra1, Object o) {
     }
 
-    @Override public void onPlayerError(Error error, int extra1, Object o) {
+    @Override
+    public void onPlayerError(Error error, int extra1, Object o) {
         isSteamConnected = false;
         isReconnecting = false;
         switch (error) {
@@ -255,32 +279,35 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
     }
 
 
-
-    @OnClick(R.id.img_bt_close) void close() {
+    @OnClick(R.id.img_bt_close)
+    void close() {
         finish();
     }
 
     int praiseCount;
     final int praiseSendDelay = 4 * 1000;
     private Thread sendPraiseThread;
+
     /**
      * 点赞
      */
-    @OnClick(R.id.like_image) void Praise() {
+    @OnClick(R.id.like_image)
+    void Praise() {
         periscopeLayout.addHeart();
         synchronized (this) {
             ++praiseCount;
         }
-        if(sendPraiseThread == null){
+        if (sendPraiseThread == null) {
             sendPraiseThread = new Thread(new Runnable() {
-                @Override public void run() {
-                    while(!isFinishing()){
+                @Override
+                public void run() {
+                    while (!isFinishing()) {
                         int count = 0;
-                        synchronized (LiveAudienceActivity.this){
+                        synchronized (LiveAudienceActivity.this) {
                             count = praiseCount;
                             praiseCount = 0;
                         }
-                        if(count > 0) {
+                        if (count > 0) {
                             sendPraiseMessage(count);
                             try {
                                 LiveManager.getInstance().postStatistics(StatisticsType.PRAISE, liveId, count);
@@ -300,6 +327,11 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
             sendPraiseThread.setDaemon(true);
             sendPraiseThread.start();
         }
+    }
+    @OnClick(R.id.gift_image)
+    public void onGiftClicked() {
+        GiftListDialog giftDialog = GiftListDialog.newInstance();
+        giftDialog.show(getSupportFragmentManager(), "GiftDialog");
     }
 
 
@@ -321,18 +353,20 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
     /**
      * 重连到直播server
      */
-    private void reconnect(){
-        if(isSteamConnected || isReconnecting)
+    private void reconnect() {
+        if (isSteamConnected || isReconnecting)
             return;
-        if(reconnectThread != null &&reconnectThread.isAlive())
+        if (reconnectThread != null && reconnectThread.isAlive())
             return;
 
-        reconnectThread = new Thread(){
-            @Override public void run() {
-                while (!isFinishing() && !isSteamConnected){
+        reconnectThread = new Thread() {
+            @Override
+            public void run() {
+                while (!isFinishing() && !isSteamConnected) {
                     runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            if(!isReconnecting) {
+                        @Override
+                        public void run() {
+                            if (!isReconnecting) {
                                 isReconnecting = true;
                                 connectLiveStream();
                             }
@@ -353,6 +387,14 @@ public class LiveAudienceActivity extends LiveBaseActivity implements UPlayerSta
         reconnectThread.start();
 
 
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // TODO: add setContentView(...) invocation
+        ButterKnife.bind(this);
     }
 
 
