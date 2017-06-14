@@ -35,6 +35,10 @@ public class ReChargeDialog extends DialogFragment {
     @BindView(R.id.balance)
     TextView mBalance;
     Unbinder unbinder;
+
+
+
+
     int balence = 0;
     int recharge = 0;
     ProgressDialog pd;
