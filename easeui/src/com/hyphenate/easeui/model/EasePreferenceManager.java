@@ -20,6 +20,8 @@ public class EasePreferenceManager {
     private static String SHARED_KEY_CURRENTUSER_USERNAME = "SHARED_KEY_CURRENTUSER_USERNAME";
     private static String SHARED_KEY_CURRENTUSER_NICK = "SHARED_KEY_CURRENTUSER_NICK";
     private static String SHARED_KEY_CURRENTUSER_AVATAR = "SHARED_KEY_CURRENTUSER_AVATAR";
+    private static String SHARED_KEY_IS_SHOW = "SHARED_KEY_IS_SHOW";
+
 
 
     /*-----------------------------mySharePreferenceEnd----------------------------------------------*/
@@ -47,6 +49,7 @@ public class EasePreferenceManager {
         editor.putStringSet(KEY_AT_GROUPS, groups);
         editor.commit();
     }
+    /*-----------------------get set方法-----------------------------------*/
     
     public Set<String> getAtMeGroups(){
         return mUserSharedPreferences.getStringSet(KEY_AT_GROUPS, null);
@@ -77,6 +80,16 @@ public class EasePreferenceManager {
     public String getCurrentUsername(){
         return mUserSharedPreferences.getString(SHARED_KEY_CURRENTUSER_USERNAME, null);
     }
+    public void setDialogShow(Boolean isShow) {
+        userEditor.putBoolean(SHARED_KEY_IS_SHOW, isShow);
+        userEditor.apply();
+    }
+    public Boolean getDialogShow(){
+        return mUserSharedPreferences.getBoolean(SHARED_KEY_IS_SHOW, false);
+    }
+
+
+    /*-----------------------------------------------------------------------------------*/
 
     public void removeCurrentUserInfo() {
         userEditor.remove(SHARED_KEY_CURRENTUSER_NICK);
