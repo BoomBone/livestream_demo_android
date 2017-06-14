@@ -1,14 +1,18 @@
 package cn.ucai.live.ui.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -47,6 +51,7 @@ import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.hyphenate.chat.EMTextMessageBody;
 import com.hyphenate.easeui.domain.User;
+import com.hyphenate.easeui.model.EasePreferenceManager;
 import com.hyphenate.easeui.utils.EaseUserUtils;
 import com.hyphenate.easeui.widget.EaseImageView;
 import com.hyphenate.exceptions.HyphenateException;
@@ -590,12 +595,46 @@ public abstract class LiveBaseActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 int giftId = (int) v.getTag();
-                sendGift(giftId);
+                showSendGift(giftId);
+//                sendGift(giftId);
             }
         });
         giftDialog.show(getSupportFragmentManager(), "GiftDialog");
 
     }
+
+    private void showSendGift(int giftId) {
+        if(EasePreferenceManager.getInstance().getDialogShow()){
+            sendGift(giftId);
+        }else{
+            showSendDialog(giftId);
+        }
+    }
+
+    private void showSendDialog(final int giftId) {
+        Gift gift = LiveHelper.getInstance().getGiftList().get(giftId);
+        CheckBox cb = new CheckBox(LiveBaseActivity.this);
+        cb.setText("不再提示");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("提示")
+                .setMessage("确定打赏" + gift.getGname() + "么？")
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        sendGift(giftId);
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .setView(cb)
+                .show();
+        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                EasePreferenceManager.getInstance().setDialogShow(true);
+            }
+        });
+    }
+
 
     private void sendGift(int giftId) {
         L.e(TAG, "sendGift,giftId" + giftId);
