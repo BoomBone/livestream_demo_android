@@ -18,17 +18,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.hyphenate.easeui.utils.EaseUserUtils;
-import com.hyphenate.easeui.widget.EaseImageView;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.ucai.live.I;
 import cn.ucai.live.LiveHelper;
@@ -116,6 +112,13 @@ public class GiftListDialog extends DialogFragment {
         if (unbinder != null) {
             unbinder.unbind();
         }
+    }
+
+    @OnClick(R.id.tv_recharge)
+    public void onRechangrgelicked() {
+        final ReChargeDialog reCharge= ReChargeDialog.newInstance();
+        reCharge.show(getChildFragmentManager(), "ReChargeDialog");
+
     }
 
     class GiftAdapter extends RecyclerView.Adapter<GiftHolder> {

@@ -14,6 +14,16 @@ public class User implements Serializable {
 
 	private String mAvatar;
 
+	public Integer getBalance() {
+		return balance;
+	}
+
+	public void setBalance(Integer balance) {
+		this.balance = balance;
+	}
+
+	private Integer balance;
+
 	/**
 	 * initial letter for nickname
 	 */

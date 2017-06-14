@@ -145,6 +145,12 @@ public class LiveManager {
     public Result<Wallet> givingGift(String username,String anchor,int giftId,int num) throws LiveException {
         return handleResponseCallToResult(liveService.givingGifts(username, anchor, giftId, num), Wallet.class);
     }
+    public int getBalance(String username) throws LiveException {
+        Result<User> result = handleResponseCallToResult(liveService.getBalance(username), User.class);
+        User user = result.getRetData();
+        Integer balance = user.getBalance();
+        return balance;
+    }
 
 
     static class RequestInterceptor implements Interceptor {
