@@ -1,6 +1,9 @@
 package cn.ucai.live.ui.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +40,10 @@ public class MyProfileActivity extends BaseActivity {
     @BindView(R.id.recharge)
     TextView mRecharge;
 
+
+    private IntentFilter filter;
+    private ReChargeChangeReceiver receiver;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,15 @@ public class MyProfileActivity extends BaseActivity {
                 finish();
             }
         });
+        filter = new IntentFilter();
+        filter.addAction("balance change");
+        receiver = new ReChargeChangeReceiver();
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         initView();
     }
 
@@ -78,6 +94,7 @@ public class MyProfileActivity extends BaseActivity {
         reCharge.show(getSupportFragmentManager(), "ReChargeDialog");
     }
 
+
     @OnClick(R.id.btn_logout)
     public void onlogoutClicked() {
         EMClient.getInstance().logout(false, new EMCallBack() {
@@ -85,7 +102,8 @@ public class MyProfileActivity extends BaseActivity {
             public void onSuccess() {
                 LiveHelper.getInstance().reset();
                 finish();
-                startActivity(new Intent(MyProfileActivity.this, LoginActivity.class));
+                startActivity(new Intent(MyProfileActivity.this, LoginActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP));
             }
 
             @Override
@@ -98,5 +116,12 @@ public class MyProfileActivity extends BaseActivity {
 
             }
         });
+    }
+    class ReChargeChangeReceiver extends BroadcastReceiver{
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            initView();
+        }
     }
 }

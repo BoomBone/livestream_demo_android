@@ -1,6 +1,7 @@
 package cn.ucai.live.ui.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -179,5 +180,11 @@ public class ReChargeDialog extends DialogFragment {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getContext().sendBroadcast(new Intent("balance change"));
     }
 }
