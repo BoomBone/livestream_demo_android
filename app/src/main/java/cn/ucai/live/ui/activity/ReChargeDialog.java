@@ -1,5 +1,6 @@
 package cn.ucai.live.ui.activity;
 
+import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ public class ReChargeDialog extends DialogFragment {
     Unbinder unbinder;
     int balence = 0;
     int recharge = 0;
+    ProgressDialog pd;
 
     public void setOnClickListener(View.OnClickListener listener) {
         mOnClickListener = listener;
@@ -97,6 +99,17 @@ public class ReChargeDialog extends DialogFragment {
             }
         }).start();
     }
+    private void initDialog(){
+        pd = new ProgressDialog(getActivity());
+        pd.setMessage("正在充值...");
+        pd.setCanceledOnTouchOutside(false);
+        pd.show();
+    }
+    private void dismissDialog(){
+        if(pd.isShowing()&&pd!=null){
+            pd.dismiss();
+        }
+    }
 
     @Override
     public void onDestroyView() {
@@ -131,6 +144,7 @@ public class ReChargeDialog extends DialogFragment {
     }
 
     private void rechargeDate(final int rmb) {
+        initDialog();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -143,6 +157,7 @@ public class ReChargeDialog extends DialogFragment {
                             public void run() {
                                 CommonUtils.showShortToast("充值"+rmb+"元成功");
                                 initDate();
+                                dismissDialog();
                             }
                         });
 

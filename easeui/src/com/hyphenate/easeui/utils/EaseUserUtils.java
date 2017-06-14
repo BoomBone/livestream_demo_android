@@ -48,11 +48,11 @@ public class EaseUserUtils {
     	EaseUser user = getUserInfo(username);
         if(user != null && user.getAvatar() != null){
             try {
-                int avatarResId = Integer.parseInt(user.getAvatar());
-                Glide.with(context).load(avatarResId).into(imageView);
+//                int avatarResId = Integer.parseInt(user.getAvatar());
+                Glide.with(context).load(user.getAvatar()).into(imageView);
             } catch (Exception e) {
                 //use default avatar
-                Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
+//                Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
             }
         }else{
             Glide.with(context).load(R.drawable.ease_default_avatar).into(imageView);
@@ -64,11 +64,11 @@ public class EaseUserUtils {
         User user = getAppUserInfo(username);
         if (user != null && user.getAvatar() != null) {
             try {
-                int avatarResId = Integer.parseInt(user.getAvatar());
-                Glide.with(context).load(avatarResId).into(imageView);
+//                int avatarResId = Integer.parseInt(user.getAvatar());
+                Glide.with(context).load(user.getAvatar()).into(imageView);
             } catch (Exception e) {
                 //use default avatar
-                Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
+//                Glide.with(context).load(user.getAvatar()).diskCacheStrategy(DiskCacheStrategy.ALL).placeholder(R.drawable.ease_default_avatar).into(imageView);
             }
         } else {
             Glide.with(context).load(R.drawable.ease_default_avatar).into(imageView);
@@ -79,13 +79,12 @@ public class EaseUserUtils {
     public static void setAppGift(Context context, String giftPath, ImageView imageView) {
         if (giftPath != null ) {
             try {
-                int avatarResId = Integer.parseInt(giftPath);
-                Glide.with(context).load(avatarResId).into(imageView);
+//                int avatarResId = Integer.parseInt(giftPath);
+                Glide.with(context).load(giftPath).into(imageView);
             } catch (Exception e) {
                 //use default avatar
-                Glide.with(context).load(giftPath).diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .placeholder(R.drawable.gift_default).into(imageView);
-//                Glide.with(context).load(R.drawable.gift_default).into(imageView);
+//                Glide.with(context).load(giftPath).diskCacheStrategy(DiskCacheStrategy.ALL)
+//                        .placeholder(R.drawable.gift_default).into(imageView);
             }
         } else {
             Glide.with(context).load(R.drawable.gift_default).into(imageView);
