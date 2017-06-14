@@ -151,6 +151,10 @@ public class LiveManager {
         Integer balance = user.getBalance();
         return balance;
     }
+    public boolean recharge(String username,int rmb) throws LiveException {
+        Result<User> result = handleResponseCallToResult(liveService.recharge(username, rmb), User.class);
+        return result.isRetMsg();
+    }
 
 
     static class RequestInterceptor implements Interceptor {

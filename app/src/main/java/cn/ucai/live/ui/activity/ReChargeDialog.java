@@ -17,10 +17,12 @@ import com.hyphenate.chat.EMClient;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 import cn.ucai.live.R;
 import cn.ucai.live.data.restapi.LiveException;
 import cn.ucai.live.data.restapi.LiveManager;
+import cn.ucai.live.utils.CommonUtils;
 
 /**
  * Created by wei on 2017/3/3.
@@ -33,6 +35,7 @@ public class ReChargeDialog extends DialogFragment {
     TextView mBalance;
     Unbinder unbinder;
     int balence = 0;
+    int recharge = 0;
 
     public void setOnClickListener(View.OnClickListener listener) {
         mOnClickListener = listener;
@@ -98,8 +101,64 @@ public class ReChargeDialog extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if(unbinder!=null){
+        if (unbinder != null) {
             unbinder.unbind();
         }
+    }
+
+    @OnClick({R.id.recharge100, R.id.recharge50, R.id.recharge20, R.id.recharge10, R.id.recharge5, R.id.recharge1})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.recharge100:
+                rechargeDate(100);
+                break;
+            case R.id.recharge50:
+                rechargeDate(50);
+                break;
+            case R.id.recharge20:
+                rechargeDate(20);
+                break;
+            case R.id.recharge10:
+                rechargeDate(10);
+                break;
+            case R.id.recharge5:
+                rechargeDate(5);
+                break;
+            case R.id.recharge1:
+                rechargeDate(1);
+                break;
+        }
+    }
+
+    private void rechargeDate(final int rmb) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    boolean b = LiveManager.getInstance().recharge(EMClient.getInstance().getCurrentUser(), rmb);
+
+                    if(b){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CommonUtils.showShortToast("充值"+rmb+"元成功");
+                                initDate();
+                            }
+                        });
+
+                    }else{
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                CommonUtils.showShortToast("充值失败");
+                            }
+                        });
+
+                    }
+                } catch (LiveException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 }
