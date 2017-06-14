@@ -8,6 +8,7 @@ import cn.ucai.live.LiveApplication;
 import cn.ucai.live.data.model.Gift;
 import cn.ucai.live.data.model.LiveRoom;
 import cn.ucai.live.data.model.Result;
+import cn.ucai.live.data.model.Wallet;
 import cn.ucai.live.data.restapi.model.LiveStatusModule;
 import cn.ucai.live.data.restapi.model.ResponseModule;
 import cn.ucai.live.data.restapi.model.StatisticsType;
@@ -139,6 +140,10 @@ public class LiveManager {
         Call<String> call = liveService.getAllGift();
         Result<List<Gift>> result = handleResponseCallToResultList(call, Gift.class);
         return result.getRetData();
+    }
+    /*-------------------------------------------------------------------------------------------------------*/
+    public Result<Wallet> givingGift(String username,String anchor,int giftId,int num) throws LiveException {
+        return handleResponseCallToResult(liveService.givingGifts(username, anchor, giftId, num), Wallet.class);
     }
 
 
